@@ -153,36 +153,41 @@ class UserController extends Controller
     }
 
     public function loginAuth(Request $request)
-    {
-        $request->validate([
-            'username' => ['required'],
-            'password' => ['required'],
-        ]);
+{
+    $request->validate([
+        'username' => ['required'],
+        'password' => ['required'],
+    ]);
 
-        $potentialUser = User::where('username', $request->input('username'))
-            ->first();
+    $potentialUser = User::where('username', $request->input('username'))->first();
 
-        if (!$potentialUser) {
-            return redirect()->to('/login')
-                ->withErrors(['username' => 'Wrong username or password']);
+    if (!$potentialUser) {
+        return redirect()->to('/login')->withErrors(['username' => 'Wrong username or password']);
+    }
+
+    if (!password_verify($request->input('password'), $potentialUser['password'])) {
+        return redirect()->to('/login')->withErrors(['username' => 'Wrong username or password']);
+    }
+
+    // Attempt to authenticate the user
+    if (auth()->attempt(['username' => $request->input('username'), 'password' => $request->input('password')], $request->remember_me)) {
+        // Authentication successful
+        // If "Remember Me" is checked, create a session or cookie to remember the user
+        if ($request->remember_me) {
+            // You can use Laravel's built-in remember me functionality
+            // This will set a long-lived cookie to remember the user's authentication status
+            auth()->login($potentialUser, true);
         }
-
-        if (!password_verify($request->input('password'), $potentialUser['password'])) {
-            return redirect()->to('/login')
-                ->withErrors(['username' => 'Wrong username or password']);
-        }
-
-        // NOTE: Investigate the functionality of auth()->attempt()
-        // auth()->attempt([
-        //     'username' => $request->input('username'),
-        //     'password' => $request->input('password'),
-        // ]);
-
-        auth()->login($potentialUser);
-        request()->session()->regenerate();
-
+        
+        // Regenerate the session ID to prevent session fixation attacks
+        $request->session()->regenerate();
+        
         return redirect()->to('/home');
     }
+
+    // Authentication failed, redirect back with error message
+    return redirect()->to('/login')->withErrors(['username' => 'Wrong username or password']);
+}
 
     public function logout(Request $request)
     {

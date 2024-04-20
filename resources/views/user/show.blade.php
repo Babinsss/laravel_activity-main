@@ -8,7 +8,12 @@
     }
 
     .title {
-        padding-bottom: 20px
+        padding-bottom: 20px;
+    }
+
+    /* Additional styles */
+    .btn-back {
+        margin-top: 20px; /* Adjust spacing */
     }
 </style>
 
@@ -17,7 +22,7 @@
     <form class="row g-4" action="#" method="POST">
         @csrf
         {{-- First Name --}}
-        <div class="col-md-">
+        <div class="col-md">
             <label for="full_name" class="form-label">Full Name</label>
             <input type="text" class="form-control" id="full_name" name="full_name" value="{{$user->first_name}} @if($user->middle_name){{$user->middle_name[0]}}. @endif{{$user->last_name}} @if($user->suffix_name){{$user->suffix_name}} @endif" readonly>
         </div>
@@ -29,7 +34,7 @@
         {{-- Gender --}}
         <div class="col-md-2">
             <label for="gender_id" class="form-label">Gender</label>
-            <input type="text" class="form-control" id="suffix_name" name="suffix_name" value="{{ $user->gender->gender }}" readonly>
+            <input type="text" class="form-control" id="gender_id" name="gender_id" value="{{ $user->gender->gender }}" readonly>
         </div>
         {{-- Address --}}
         <div class="col-md-7">
@@ -46,15 +51,14 @@
             <input type="text" class="form-control" id="email_address" name="email_address" value="{{$user->email_address}}" readonly>
         </div>
         {{-- Username --}}
-        <div class="col-md-">
+        <div class="col-md">
             <label for="username" class="form-label">Username</label>
             <input type="text" class="form-control" id="username" name="username" value="{{$user->username}}" readonly>
         </div>
 
         {{-- Buttons --}}
         <div class="col-12">
-            <a href="/user" class="btn btn-danger">Back</a>
-
+            <a href="/user" class="btn btn-danger btn-back">Back</a>
         </div>
     </form>
 </div>
